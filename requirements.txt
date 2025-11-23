@@ -1,0 +1,15 @@
+# 接口自动化测试框架依赖包
+
+# HTTP请求库
+requests>=2.31.0
+
+# YAML文件处理
+PyYAML>=6.0
+
+# 测试框架
+pytest>=7.4.0
+pytest-html>=3.2.0
+
+# 其他工具
+urllib3>=2.0.0
+

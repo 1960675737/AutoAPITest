@@ -1,0 +1,40 @@
+# 接口自动化测试框架配置文件
+
+# 基础配置
+base:
+  # 基础URL
+  base_url: "https://api.example.com"
+  # 请求超时时间（秒）
+  timeout: 30
+  # 是否验证SSL证书
+  verify_ssl: true
+
+# 日志配置
+logging:
+  # 日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  # 日志格式
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # 日志文件路径
+  file_path: "logs/api_test.log"
+  # 是否输出到控制台
+  console: true
+
+# 测试配置
+test:
+  # 测试报告格式: html, json
+  report_format: "html"
+  # 报告保存路径
+  report_path: "reports"
+  # 是否在失败时截图
+  screenshot_on_failure: false
+
+# 认证配置
+auth:
+  # Token存储方式: memory, file
+  token_storage: "memory"
+  # Token文件路径（当token_storage为file时使用）
+  token_file: "logs/token.txt"
+  # Token过期时间（秒，0表示不过期）
+  token_expire: 3600
+
