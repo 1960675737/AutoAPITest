@@ -55,5 +55,6 @@ def main():
 
 
 if __name__ == "__main__":
+    print("开始运行测试")
     sys.exit(main())
 
