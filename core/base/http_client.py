@@ -4,9 +4,9 @@ HTTP客户端
 """
 import requests
 from typing import Dict, Any, Optional
-from lib.utils.config_loader import config
-from lib.utils.logger import logger
-from lib.core.session_manager import session_manager
+from core.utils.config_loader import config
+from core.utils.logger import logger
+from core.base.session_manager import session_manager
 
 
 class HttpClient:
@@ -21,7 +21,7 @@ class HttpClient:
     
     def _get_headers(self, headers: Optional[Dict[str, str]] = None) -> Dict[str, str]:
         """
-        获取请求头（自动添加Token）
+        获取请求头（自动添加Token和账号请求头）
         
         Args:
             headers: 自定义请求头
@@ -29,17 +29,23 @@ class HttpClient:
         Returns:
             完整的请求头字典
         """
+        # 基础请求头
         default_headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+        
+        # 添加账号级别的请求头（优先级最低）
+        account_headers = session_manager.get_account_headers()
+        if account_headers:
+            default_headers.update(account_headers)
         
         # 自动添加Token
         token = session_manager.get_token()
         if token:
             default_headers['Authorization'] = f'Bearer {token}'
         
-        # 合并自定义请求头
+        # 合并自定义请求头（优先级最高）
         if headers:
             default_headers.update(headers)
         
@@ -104,6 +110,16 @@ class HttpClient:
         """
         url = self._build_url(endpoint)
         request_headers = self._get_headers(headers)
+        
+        # 自动添加账号级别的URL参数（如 wsgsig）
+        account_params = session_manager.get_account_params()
+        if account_params:
+            if params is None:
+                params = {}
+            # 账号参数优先级较低，用户传入的params会覆盖它
+            merged_params = account_params.copy()
+            merged_params.update(params)
+            params = merged_params
         
         # 记录请求日志
         self._log_request(method, url, params=params, json=json, data=data, headers=request_headers)

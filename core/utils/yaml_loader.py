@@ -48,7 +48,7 @@ class YamlLoader:
         project_root = os.path.dirname(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         )
-        data_path = os.path.join(project_root, "data", file_name)
+        data_path = os.path.join(project_root, "bizs", "data", file_name)
         return YamlLoader.load(data_path)
     
     @staticmethod

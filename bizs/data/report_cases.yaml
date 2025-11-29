@@ -1,0 +1,13 @@
+# 报表模块测试用例数据
+
+# 历史订单列表
+history_order_list:
+  指定时间筛选:
+    pageNum: 1
+    pageSize: 50
+    startDate: "2025-11-29"
+    endDate: "2025-11-29"
+    orderStatus: []
+    sortRule: {field: "", order: ""}
+
+

@@ -4,9 +4,10 @@
 """
 import os
 import time
-from typing import Optional
-from lib.utils.config_loader import config
-from lib.utils.logger import logger
+from typing import Optional, Dict
+from core.utils.config_loader import config
+from core.utils.logger import logger
+from core.utils.account_loader import account_loader
 
 
 class SessionManager:
@@ -27,10 +28,16 @@ class SessionManager:
         self._token_storage = config.get('auth.token_storage', 'memory')
         self._token_file = config.get('auth.token_file', 'logs/token.txt')
         self._token_expire = config.get('auth.token_expire', 3600)
+        self._current_account: str = "default"  # 当前使用的账号
+        self._account_headers: Dict[str, str] = {}  # 账号请求头缓存
+        self._account_params: Dict[str, str] = {}  # 账号URL参数缓存
         
         # 如果使用文件存储，尝试从文件加载token
         if self._token_storage == 'file':
             self._load_token_from_file()
+        
+        # 加载默认账号的请求头
+        self.set_account("default")
     
     def set_token(self, token: str):
         """
@@ -90,6 +97,45 @@ class SessionManager:
         """
         token = self.get_token()
         return token is not None
+    
+    def set_account(self, account_name: str):
+        """
+        设置当前使用的账号
+        
+        Args:
+            account_name: 账号名称
+        """
+        self._current_account = account_name
+        self._account_headers = account_loader.get_account_headers(account_name)
+        self._account_params = account_loader.get_account_params(account_name)
+        logger.info(f"已切换到账号: {account_name}")
+    
+    def get_account(self) -> str:
+        """
+        获取当前使用的账号名称
+        
+        Returns:
+            当前账号名称
+        """
+        return self._current_account
+    
+    def get_account_headers(self) -> Dict[str, str]:
+        """
+        获取当前账号的请求头
+        
+        Returns:
+            当前账号的请求头字典
+        """
+        return self._account_headers.copy()
+    
+    def get_account_params(self) -> Dict[str, str]:
+        """
+        获取当前账号的URL查询参数
+        
+        Returns:
+            当前账号的URL查询参数字典
+        """
+        return self._account_params.copy()
     
     def _save_token_to_file(self):
         """保存Token到文件"""

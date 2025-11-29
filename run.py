@@ -4,8 +4,8 @@
 import sys
 import os
 import pytest
-from lib.utils.logger import logger
-from lib.utils.config_loader import config
+from core.utils.logger import logger
+from core.utils.config_loader import config
 
 
 def main():

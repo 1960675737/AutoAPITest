@@ -4,8 +4,8 @@ API基类
 """
 import requests
 from typing import Dict, Any, Optional
-from lib.core.http_client import http_client
-from lib.utils.logger import logger
+from core.base.http_client import http_client
+from core.utils.logger import logger
 
 
 class BaseAPI:

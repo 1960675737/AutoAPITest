@@ -5,7 +5,7 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from lib.utils.config_loader import config
+from core.utils.config_loader import config
 
 
 class Logger:

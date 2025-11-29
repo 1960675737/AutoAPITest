@@ -3,7 +3,7 @@
 # 基础配置
 base:
   # 基础URL
-  base_url: "https://api.example.com"
+  base_url: "https://admin-api.zaporder.com"
   # 请求超时时间（秒）
   timeout: 30
   # 是否验证SSL证书

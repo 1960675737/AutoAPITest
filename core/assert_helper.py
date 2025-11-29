@@ -3,7 +3,7 @@
 提供各种断言方法用于测试验证
 """
 from typing import Any, Dict, List, Optional
-from lib.utils.logger import logger
+from core.utils.logger import logger
 
 
 class AssertHelper:
