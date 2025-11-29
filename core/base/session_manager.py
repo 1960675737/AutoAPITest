@@ -100,7 +100,7 @@ class SessionManager:
     
     def set_account(self, account_name: str):
         """
-        设置当前使用的账号
+        基于account_name，获取账号配置文件中的配置参数，并自动处理成发起请求需要的请求头和URL参数
         
         Args:
             account_name: 账号名称

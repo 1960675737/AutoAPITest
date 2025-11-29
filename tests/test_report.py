@@ -30,11 +30,9 @@ class TestReport(BaseTest):
         case_data = test_data["history_order_list"]["指定时间筛选"]
         logger.info(f"请求参数: {case_data}")
         
-        # 2. 发送请求
-        response = report_api.get_order_list_page_by_dict(
-            params=case_data,
-            return_response=True
-        )
+        
+        # 2. 调用API（内置状态码断言）
+        response = report_api.report_order_listPage(params=case_data)
         
         # 3. 断言响应
         response_data = self.assert_success_response(response)

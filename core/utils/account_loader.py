@@ -1,6 +1,6 @@
 """
 账号配置加载器
-用于加载和管理账号的请求头配置
+用于加载和管理账号的请求头配置和URL参数配置
 """
 import os
 import yaml
@@ -94,13 +94,25 @@ class AccountLoader:
     
     def get_account_params(self, account_name: str = "default") -> Dict[str, str]:
         """
-        获取指定账号的URL查询参数（如 wsgsig）
+        获取指定账号的URL查询参数
+        自动提取配置中除预定义请求头字段外的所有字段作为URL参数
+        配置文件中的参数名应与实际URL参数名保持一致
         
         Args:
             account_name: 账号名称，默认为 "default"
             
         Returns:
             账号的URL查询参数字典
+            
+        Example:
+            配置文件中：
+                account1:
+                    org_id: "123"
+                    wsgsig: "abc123"
+                    custom_param: "value"
+            
+            返回的params：
+                {"wsgsig": "abc123", "custom_param": "value"}
         """
         accounts = self._account_config.get("accounts", {})
         
@@ -112,11 +124,21 @@ class AccountLoader:
                 return {}
         
         account_config = accounts.get(account_name, {})
-        params = {}
         
-        # 提取URL参数字段
-        if "wsgsig" in account_config:
-            params["wsgsig"] = account_config["wsgsig"]
+        # 定义已知的请求头相关字段（这些字段不会被作为URL参数）
+        header_fields = {
+            "account_id",
+            "org_id", 
+            "store_id",
+            "tenant_id",
+            "Cookie"
+        }
+        
+        # 提取所有非请求头字段作为URL参数
+        params = {}
+        for key, value in account_config.items():
+            if key not in header_fields:
+                params[key] = str(value)
         
         return params
     
