@@ -3,6 +3,7 @@
 提供统一的日志记录功能
 """
 import os
+import sys
 import logging
 from logging.handlers import RotatingFileHandler
 from core.utils.config_loader import config
@@ -39,7 +40,7 @@ class Logger:
             
             # 控制台输出
             if config.get('logging.console', True):
-                console_handler = logging.StreamHandler()
+                console_handler = logging.StreamHandler(sys.stdout)  # 输出到 stdout 而不是 stderr
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(formatter)
                 logger.addHandler(console_handler)
