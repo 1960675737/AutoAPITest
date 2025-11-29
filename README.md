@@ -43,10 +43,8 @@ AutoAPI/
 │   └── test_helper.py            # 测试辅助工具（BaseTest）
 ├── bizs/                          # 业务层（API 封装和测试数据）
 │   ├── apis/                      # API 封装
-│   │   ├── auth_api.py           # 认证接口
 │   │   └── report_api.py         # 报表接口
 │   └── data/                      # 测试数据
-│       ├── login_cases.yaml      # 登录测试数据
 │       └── report_cases.yaml     # 报表测试数据
 ├── tests/                         # 测试层（测试用例）
 │   ├── conftest.py               # pytest 配置（fixtures）
