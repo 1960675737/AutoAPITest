@@ -2,8 +2,7 @@
 报表API
 封装报表相关接口，包括历史订单等功能
 """
-import requests
-from typing import Dict, Any, Optional, Union, List
+from typing import Dict, Any, Optional, List
 from core.base.base_api import BaseAPI
 from core.base.session_manager import session_manager
 from core.utils.logger import logger
@@ -50,9 +49,8 @@ class ReportAPI(BaseAPI):
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
         order_status: Optional[List[int]] = None,
-        sort_rule: Optional[Dict[str, str]] = None,
-        return_response: bool = False
-    ) -> Union[Dict[str, Any], requests.Response]:
+        sort_rule: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
         """
         获取历史订单列表（分页）
         
@@ -63,11 +61,9 @@ class ReportAPI(BaseAPI):
             end_date: 结束日期，格式：YYYY-MM-DD
             order_status: 订单状态列表，如 [1, 2, 3]
             sort_rule: 排序规则，格式：{"field": "createTime", "order": "desc"}
-            return_response: 是否返回响应对象（用于测试）
             
         Returns:
-            如果 return_response=True，返回 requests.Response 对象
-            否则返回订单列表响应数据字典
+            订单列表响应数据字典（已自动处理响应和错误）
         """
         # 使用类常量作为默认值
         page_num = page_num if page_num is not None else self.DEFAULT_PAGE_NUM
@@ -98,62 +94,45 @@ class ReportAPI(BaseAPI):
             payload["sortRule"] = sort_rule
             logger.debug(f"排序规则: {sort_rule}")
         
-        # 发送POST请求
-        response = self.client.post(self.history_order_list, json=payload)
+        # 使用 BaseAPI 的 post 方法发送请求（自动处理响应和错误）
+        response_data = self.post(self.history_order_list, json=payload)
+        logger.info(f"查询历史订单列表成功")
         
-        # 如果要求返回响应对象，直接返回
-        if return_response:
-            return response
-        
-        # 处理响应
-        try:
-            response_data = response.json()
-            logger.info(f"查询历史订单列表成功，状态码: {response.status_code}")
-            return response_data
-        except ValueError:
-            # 如果不是JSON响应，返回文本
-            logger.warning(f"响应不是JSON格式: {response.text[:200]}")
-            return {"text": response.text, "status_code": response.status_code}
+        return response_data
     
     def report_order_listPage(
         self,
         params: Dict[str, Any]
-    ) -> requests.Response:
+    ) -> Dict[str, Any]:
         """
         /api/report/order/listPage - 获取历史订单列表
-        内置基础断言：状态码验证
+        使用 BaseAPI 的 post 方法，自动处理响应和错误
         
         Args:
             params: 参数字典，包含 pageNum, pageSize, startDate, endDate, orderStatus, sortRule 等
             
         Returns:
-            requests.Response 对象（已通过状态码断言）
+            响应数据字典（已通过 BaseAPI 的响应处理和错误处理）
             
-        Raises:
-            AssertionError: 当状态码不符合预期时抛出
+        Note:
+            BaseAPI.post() 已经自动处理了 HTTP 状态码验证和 JSON 解析
+            如果请求失败会抛出异常，成功则返回解析后的字典
         """
         logger.info(f"[API调用] /api/report/order/listPage")
         logger.info(f"[请求参数] {params}")
         
-        # 调用底层方法获取响应
-        response = self.get_order_list_page(
+        # 调用底层方法获取响应数据（使用 BaseAPI 的封装）
+        response_data = self.get_order_list_page(
             page_num=params.get("pageNum", self.DEFAULT_PAGE_NUM),
             page_size=params.get("pageSize", self.DEFAULT_PAGE_SIZE),
             start_date=params.get("startDate"),
             end_date=params.get("endDate"),
             order_status=params.get("orderStatus"),
-            sort_rule=params.get("sortRule"),
-            return_response=True
+            sort_rule=params.get("sortRule")
         )
         
-        # 基础断言：状态码验证
-        actual_status_code = response.status_code
-        assert actual_status_code == 200, (
-            f"状态码断言失败！返回状态码: {actual_status_code}, "
-            f"响应内容: {response.text[:200]}"
-        )
-        logger.info(f"[状态码断言] ✓ 通过 - 状态码: {actual_status_code}")
+        logger.info(f"[API调用成功] 已获取响应数据")
         
-        # 返回响应对象供测试用例进行业务逻辑断言
-        return response
+        # 返回响应数据字典供测试用例进行业务逻辑断言
+        return response_data
 
